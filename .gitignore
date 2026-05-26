@@ -11,13 +11,22 @@ data/*
 *.zip
 *.tar
 *.tar.gz
+.cache_data/
+
+# Model weights (large files)
 *.pt
 *.pth
 *.ckpt
 
-# Outputs
+# Outputs - allow specific result files, block large model files
 outputs/*
 !outputs/.gitkeep
+!outputs/vit_b16_head_only/
+!outputs/vit_b16_finetune/
+outputs/vit_b16_head_only/best_model.pt
+outputs/vit_b16_finetune/best_model.pt
+
+# W&B local cache
 wandb/
 
 # OS / IDE

@@ -1,42 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kUEG02mW)
 # CSC4005 Lab 5 – Vision Transformer for Smart Campus Scene Classification
 
-Starter kit này dành cho **Lab 5 của học phần CSC4005**.
-
-
-Starter kit được thiết kế theo format của repo `csc4005_lab2_neu_cnn_starter`:
-
-```text
-csc4005_lab6_mit_indoor_vit_starter/
-├── README.md
-├── REPORT_TEMPLATE.md
-├── requirements.txt
-├── configs/
-│   ├── baseline_vit_head_only.json
-│   └── debug_smoke.json
-├── docs/
-│   ├── DATASET_GUIDE.md
-│   ├── RUBRIC_LAB5.md
-│   ├── LAB_GUIDE_LAB5.md
-│   └── WANDB_GUIDE.md
-├── notebooks/
-│   └── lab5_demo.ipynb
-├── outputs/
-├── src/
-│   ├── __init__.py
-│   ├── dataset.py
-│   ├── model.py
-│   ├── prepare_subset.py
-│   ├── train.py
-│   └── utils.py
-├── ci/
-│   ├── check_structure.py
-│   └── smoke_train.py
-└── .github/
-    └── workflows/
-        └── ci.yml
-```
-
 ## 1. Case study
 
 **Smart Campus Scene Classification with Vision Transformer**
@@ -53,110 +17,112 @@ office
 
 Bộ dữ liệu được sử dụng là **MIT Indoor Scenes 67**. Repo này không chứa dữ liệu gốc. Sinh viên cần tải dữ liệu từ nguồn chính thức và truyền đường dẫn qua `--data_dir`.
 
-## 2. Vì sao dùng ViT?
-
-Lab này giúp sinh viên nối trực tiếp lý thuyết ViT với thực hành:
+## 2. Cấu trúc repo
 
 ```text
-image → patches → patch embedding → transformer encoder → classification head
+csc4005-lab5-khmt_dung_binh/
+├── README.md
+├── REPORT_TEMPLATE.md
+├── requirements.txt
+├── configs/
+│   ├── baseline_vit_head_only.json
+│   └── debug_smoke.json
+├── docs/
+│   ├── DATASET_GUIDE.md
+│   ├── RUBRIC.md
+│   ├── LAB_GUIDE_LAB5.md
+│   └── WANDB_GUIDE.md
+├── outputs/
+│   ├── vit_b16_head_only/
+│   │   ├── best_model.pt
+│   │   ├── history.csv
+│   │   ├── metrics.json
+│   │   ├── curves.png
+│   │   ├── confusion_matrix.png
+│   │   ├── class_to_idx.json
+│   │   └── config.json
+│   └── vit_b16_finetune/
+│       ├── best_model.pt
+│       ├── history.csv
+│       ├── metrics.json
+│       ├── curves.png
+│       ├── confusion_matrix.png
+│       ├── class_to_idx.json
+│       └── config.json
+├── src/
+│   ├── __init__.py
+│   ├── dataset.py
+│   ├── model.py
+│   ├── prepare_subset.py
+│   ├── train.py
+│   └── utils.py
+├── ci/
+│   ├── check_structure.py
+│   └── smoke_train.py
+└── .github/
+    └── workflows/
+        └── ci.yml
 ```
 
-Sinh viên cần hiểu:
+## 3. Cài đặt
 
-1. ảnh có thể được xem như một chuỗi các patch;
-2. patch embedding trong ViT tương tự token embedding trong NLP;
-3. positional embedding giúp mô hình giữ thông tin vị trí;
-4. pretrained ViT có thể được fine-tune cho bài toán scene classification;
-5. W&B được dùng để theo dõi và so sánh thí nghiệm.
-
-## 3. Mục tiêu
-
-Sinh viên cần:
-
-1. chuẩn bị subset 5 lớp từ MIT Indoor Scenes 67;
-2. chạy được mô hình **Vision Transformer** ở chế độ `head_only`;
-3. tùy chọn chạy `finetune` nếu máy đủ mạnh;
-4. log thí nghiệm bằng **Weights & Biases (W&B)**;
-5. đánh giá bằng accuracy, macro-F1, confusion matrix;
-6. phân tích lỗi và đề xuất cải thiện mô hình/dữ liệu.
-
-## 4. Cài đặt
-
-### macOS / Linux
+Sử dụng conda environment đã có sẵn:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
+conda activate deep_learning
 pip install -r requirements.txt
 ```
 
-### Windows
+## 4. Chuẩn bị dữ liệu
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+### Tải bộ dữ liệu MIT Indoor Scenes 67
 
-## 5. Chuẩn bị dữ liệu
+Tải và giải nén bộ dữ liệu MIT Indoor Scenes 67 vào thư mục `data/Images/`.
 
-Repo này **không chứa thư mục ảnh**. Sinh viên truyền dữ liệu ngoài repo qua `--data_dir`.
-
-Hỗ trợ:
-
-1. thư mục MIT Indoor Scenes 67 đã giải nén, có các thư mục lớp;
-2. subset 5 lớp đã chuẩn bị sẵn;
-3. file ZIP chứa cấu trúc thư mục theo lớp.
-
-Ví dụ cấu trúc subset:
-
-```text
-mit_indoor_smartcampus_5/
-├── classroom/
-├── computerroom/
-├── library/
-├── corridor/
-└── office/
-```
-
-Có thể dùng script hỗ trợ:
+### Tạo subset 5 lớp
 
 ```bash
 python -m src.prepare_subset \
-  --source_dir /duong_dan/indoorCVPR_09/Images \
-  --output_dir /duong_dan/mit_indoor_smartcampus_5 \
+  --source_dir "data/Images" \
+  --output_dir "data/mit_indoor_smartcampus_5" \
   --classes classroom computerroom library corridor office \
   --max_per_class 400
 ```
 
-## 6. Chạy baseline ViT head-only
-
-```bash
-python -m src.train \
-  --data_dir /duong_dan/mit_indoor_smartcampus_5 \
-  --project csc4005-lab6-mit-indoor-vit \
-  --run_name vit_b16_head_only \
-  --model_name vit_b_16 \
-  --train_mode head_only \
-  --epochs 10 \
-  --batch_size 16 \
-  --img_size 224 \
-  --lr 0.001 \
-  --weight_decay 0.0001 \
-  --dropout 0.2 \
-  --augment \
-  --use_wandb
+Kết quả:
+```text
+classroom: 113 ảnh
+computerroom: 114 ảnh
+library: 107 ảnh
+corridor: 346 ảnh
+office: 109 ảnh
+Tổng: 789 ảnh
 ```
 
-## 7. Tùy chọn: fine-tune toàn bộ ViT
+## 5. Chạy thí nghiệm
 
-Nếu máy đủ mạnh:
+### 5.1 Debug smoke test (kiểm tra pipeline)
 
 ```bash
 python -m src.train \
-  --data_dir /duong_dan/mit_indoor_smartcampus_5 \
+  --config configs/debug_smoke.json \
+  --data_dir "data/mit_indoor_smartcampus_5"
+```
+
+### 5.2 Baseline: ViT-B/16 head_only
+
+```bash
+python -m src.train \
+  --config configs/baseline_vit_head_only.json \
+  --data_dir "data/mit_indoor_smartcampus_5" \
+  --run_name vit_b16_head_only
+```
+
+### 5.3 Mở rộng: ViT-B/16 finetune
+
+```bash
+python -m src.train \
+  --data_dir "data/mit_indoor_smartcampus_5" \
   --project csc4005-lab6-mit-indoor-vit \
   --run_name vit_b16_finetune \
   --model_name vit_b_16 \
@@ -171,28 +137,20 @@ python -m src.train \
   --use_wandb
 ```
 
-## 8. Chạy nhanh để kiểm tra pipeline
+## 6. Kết quả
 
-```bash
-python -m src.train \
-  --data_dir /duong_dan/mit_indoor_smartcampus_5 \
-  --run_name debug_no_wandb \
-  --train_mode head_only \
-  --epochs 2 \
-  --batch_size 4 \
-  --img_size 224 \
-  --max_per_class 20
-```
+### So sánh head_only vs finetune
 
-## 9. Output sau khi train
+| Metric | head_only (Test) | finetune (Test) |
+|---|---:|---:|
+| Accuracy | 91.38% | 95.69% |
+| Macro-F1 | 88.11% | 93.85% |
+| Trainable params | 3,845 (0.0045%) | 85,802,501 (100%) |
+| Epoch time | ~20s | ~28s |
 
-Mỗi run tạo thư mục:
+### Outputs
 
-```text
-outputs/<run_name>/
-```
-
-bao gồm:
+Mỗi run tạo thư mục `outputs/<run_name>/` chứa:
 
 ```text
 best_model.pt
@@ -204,47 +162,20 @@ class_to_idx.json
 config.json
 ```
 
-## 10. W&B
+## 7. W&B Dashboard
 
-Tên project thống nhất:
+- Project: [csc4005-lab6-mit-indoor-vit](https://wandb.ai/models-dai-nam-university/csc4005-lab6-mit-indoor-vit)
+- Run head_only: [vit_b16_head_only](https://wandb.ai/models-dai-nam-university/csc4005-lab6-mit-indoor-vit/runs/um106sli)
+- Run finetune: [vit_b16_finetune](https://wandb.ai/models-dai-nam-university/csc4005-lab6-mit-indoor-vit/runs/k7rnpplj)
 
-```text
-csc4005-lab5-mit-indoor-vit
-```
+## 8. Checklist nộp bài
 
-Log tối thiểu mỗi epoch:
-
-```text
-train_loss
-val_loss
-train_acc
-val_acc
-val_macro_f1
-lr
-epoch_time_sec
-```
-
-Log cuối run:
-
-```text
-test_acc
-test_macro_f1
-best_val_acc
-best_val_macro_f1
-total_params
-trainable_params
-trainable_ratio
-confusion matrix image
-learning curves image
-```
-
-## 11. Checklist nộp bài
-
-- [ ] Có subset 5 lớp từ MIT Indoor Scenes 67
-- [ ] Chạy được ViT baseline ở chế độ `head_only`
-- [ ] Có W&B dashboard
-- [ ] Có `metrics.json`
-- [ ] Có `curves.png`
-- [ ] Có `confusion_matrix.png`
-- [ ] Có báo cáo theo `REPORT_TEMPLATE.md`
-- [ ] Có nhận xét lỗi mô hình và đề xuất cải thiện
+- [x] Có subset 5 lớp từ MIT Indoor Scenes 67
+- [x] Chạy được ViT baseline ở chế độ `head_only`
+- [x] Có W&B dashboard
+- [x] Có `metrics.json`
+- [x] Có `curves.png`
+- [x] Có `confusion_matrix.png`
+- [x] Có báo cáo theo `REPORT_TEMPLATE.md`
+- [x] Có nhận xét lỗi mô hình và đề xuất cải thiện
+- [x] So sánh head_only và finetune (bài mở rộng)

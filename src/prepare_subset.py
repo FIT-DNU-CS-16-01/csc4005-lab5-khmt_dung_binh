@@ -45,7 +45,7 @@ def main() -> None:
         for p in images:
             shutil.copy2(p, dst / p.name)
 
-        print(f"{class_name}: copied {len(images)} images → {dst}")
+        print(f"{class_name}: copied {len(images)} images -> {dst}")
 
     print(f"Done. Subset saved to: {output_dir}")
 
