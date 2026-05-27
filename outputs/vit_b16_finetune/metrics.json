@@ -1,9 +1,9 @@
 {
   "best_epoch": 4,
-  "best_val_macro_f1": 0.9216930618401207,
+  "best_val_macro_f1": 0.9323342824570812,
   "test_acc": 0.9568965517241379,
-  "test_macro_f1": 0.9384632034632036,
-  "test_loss": 0.17004457371036424,
+  "test_macro_f1": 0.9446822241646915,
+  "test_loss": 0.11652163136349028,
   "total_params": 85802501,
   "trainable_params": 85802501,
   "trainable_ratio": 1.0,

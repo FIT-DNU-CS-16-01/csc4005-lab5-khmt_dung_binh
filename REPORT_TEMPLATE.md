@@ -5,10 +5,10 @@
 | STT | Họ tên | Mã sinh viên | Lớp |
 |:---:|---|---|---|
 | 1 | Lê Tuấn Dũng | 1771020189 | KHMT 17-01 |
-| 2 | Nguyễn Hòa Bình | .... | KHMT 16-01 |
+| 2 | Nguyễn Hòa Bình | 1671040004 | KHMT 16-01 |
 
 - Link GitHub repo: https://github.com/FIT-DNU-CS-16-01/csc4005-lab5-khmt_dung_binh
-- Link W&B dashboard: https://wandb.ai/models-dai-nam-university/csc4005-lab6-mit-indoor-vit
+- Link W&B dashboard: https://wandb.ai/1671040004-dai-nam/csc4005-lab6-mit-indoor-vit
 
 ## 2. Mô tả bài toán
 
@@ -91,13 +91,13 @@ image (224×224×3) → 196 patches (16×16) → patch embedding (768-d) → pos
 
 | Metric | head_only (Val) | head_only (Test) | finetune (Val) | finetune (Test) |
 |---|---:|---:|---:|---:|
-| Accuracy | 93.10% | 91.38% | 93.97% | 95.69% |
-| Macro-F1 | 91.99% | 88.11% | 92.17% | 93.85% |
-| Best epoch | 9 | — | 4 | — |
-| Loss | 0.2118 | 0.1793 | 0.1718 | 0.1700 |
+| Accuracy | 93.97% | 91.38% | 94.83% | 95.69% |
+| Macro-F1 | 0.9321 | 0.8810 | 0.9323 | 0.9446 |
+| Best epoch | 10 | — | 4 | — |
+| Loss | 0.1601 | 0.1677 | 0.1332 | 0.1165 |
 | Trainable params | 3,845 | — | 85,802,501 | — |
 | Trainable ratio | 0.0045% | — | 100% | — |
-| Epoch time | ~20s | — | ~28s | — |
+| Epoch time | ~14s | — | ~300s | — |
 
 ### 5.2 Learning curves
 

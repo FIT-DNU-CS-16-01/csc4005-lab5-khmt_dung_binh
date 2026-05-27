@@ -1,6 +1,6 @@
 {
   "config": "configs/baseline_vit_head_only.json",
-  "data_dir": "D:\\DeepLearning\\DL\\csc4005-lab5-khmt_dung_binh\\data\\mit_indoor_smartcampus_5",
+  "data_dir": "data\\mit_indoor_smartcampus_5",
   "project": "csc4005-lab6-mit-indoor-vit",
   "run_name": "vit_b16_head_only",
   "model_name": "vit_b_16",
